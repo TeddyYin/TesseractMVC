@@ -1,7 +1,91 @@
-﻿
-@{
+﻿@{
     ViewBag.Title = "Index";
 }
 
+<video id="video" width="640" height="480" autoplay></video>
+<button id="snap">Snap Photo</button>
+<canvas id="canvas" width="640" height="480"></canvas>
 <h2>@ViewBag.Message</h2>
 
+<script type="text/javascript">
+
+    // Grab elements, create settings, etc.
+    var video = document.getElementById('video');
+
+    // Get access to the camera!
+    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        // Not adding `{ audio: true }` since we only want video now
+        navigator.mediaDevices.getUserMedia({ video: true }).then(function (stream) {
+            //video.src = window.URL.createObjectURL(stream);
+            video.srcObject = stream;
+            video.play();
+        });
+    }
+
+    // Elements for taking the snapshot
+    var canvas = document.getElementById('canvas');
+    var context = canvas.getContext('2d');
+    var video = document.getElementById('video');
+
+    // Trigger photo take
+    document.getElementById("snap").addEventListener("click", function () {
+        context.drawImage(video, 0, 0, 640, 480);
+        shoot();
+    });
+
+    //$(document).ready(init);
+
+    //function init() {
+
+    //    //Google Chrome要用webkitGetUserMedia函式
+    //    navigator.webkitGetUserMedia("video", success);  //顯示影像
+
+
+    //    //定義button點選後要做什麼
+    //    $("input[type='button']").click(function () {
+    //        shoot(); //執行拍照
+    //    });
+    //}
+
+    function success(stream) {
+        $("#video").attr("src", window.webkitURL.createObjectURL(stream));
+    }
+
+    //執行拍照
+    function shoot() {
+
+        var video = $("#video")[0];
+        var canvas = capture(video);
+
+
+        $("#canvas").empty();
+        $("#canvas").append(canvas); //呈現圖像(拍照結果)
+        var imgData = canvas.toDataURL("image/jpg");
+        var base64String = imgData.substr(22); //取得base64字串
+
+        //上傳，儲存圖片
+        $.ajax({
+            url: "Handler.ashx",
+            type: "post",
+            data: { data: base64String },
+            async: true,
+            success: function (htmlVal) {
+                alert("另存圖片成功！");
+
+                console.log(htmlVal);
+            }, error: function (e) {
+                alert(e.responseText); //alert錯誤訊息
+            }
+        });
+    }
+
+    //從video元素抓取圖像到canvas
+    function capture(video) {
+        var canvas = document.createElement('canvas'); //建立canvas js DOM元素
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        var ctx = canvas.getContext('2d');
+        ctx.drawImage(video, 0, 0);
+        return canvas;
+    }
+</script>
