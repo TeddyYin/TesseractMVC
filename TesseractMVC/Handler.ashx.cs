@@ -22,7 +22,7 @@ namespace TesseractMVC
             string file_name = guid.ToString();
 
             Image img = this.Base64ToImage(base64String);
-            img.Save(@"D:\Tesseract\" + file_name + ".jpg");//儲存圖片
+            img.Save(@"C:\Tesseract\" + file_name + ".jpg");//儲存圖片
         }
 
         public bool IsReusable

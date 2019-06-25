@@ -15,7 +15,7 @@ namespace TesseractMVC.Controllers
         #region Index
         public ActionResult Index()
         {
-            var img = new Bitmap(@"D:\aaa.png");
+            var img = new Bitmap(@"C:\inlove.png");
 
             #region get in bin folder path
             var path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().CodeBase);
